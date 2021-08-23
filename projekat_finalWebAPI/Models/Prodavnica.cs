@@ -10,6 +10,10 @@ namespace projekat_finalWebAPI.Models
         [Key]
         [Column("id")]
         public int id { get; set; }
+        
+        [Column("naziv")]
+        [MaxLength(225)]
+        public string naziv { get; set; }
 
         public virtual List<Kategorija> kategorije { get; set; }
     }

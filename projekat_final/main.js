@@ -8,10 +8,12 @@ fetch("https://localhost:5001/Prodavnica/PreuzmiProdavnice").then( p => {
 
         data.forEach(shop => {
             
-            let pr = new Prodavnica();
+            let pr = new Prodavnica(shop.id, shop.naziv);
+
             
             shop.kategorije.forEach(category => {
                 let cat = new Kategorija(category.id, category.naziv, category.opis, category.slika);
+                
                 
                 category.komponente.forEach(product => {
                     let pro = new Komponenta(product.id, product.naziv, product.cena,
@@ -22,8 +24,10 @@ fetch("https://localhost:5001/Prodavnica/PreuzmiProdavnice").then( p => {
 
                 pr.dodajKategoriju(cat);
             });
+            //console.log(pr);
             pr.crtaj(document.body);
             });
+
         });
     });
 

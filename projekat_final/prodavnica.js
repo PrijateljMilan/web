@@ -4,9 +4,12 @@ import { Komponenta } from "./komponenta.js";
 export class Prodavnica
 
 {
-    constructor(){
+    constructor(id,naziv){
+        this.id=id;
+        this.naziv=naziv;
         this.kategorije = [];
         this.container = null;
+        this.div=null; 
     }
 
     dodajKategoriju(kat){
@@ -17,54 +20,46 @@ export class Prodavnica
         if(!host)
         throw new Error("Host nije definisan");
 
-        //dodajemo header
         const pozadina = document.createElement("div");
         pozadina.className = "pozadina";
         host.appendChild(pozadina);
 
-        const naslov = document.createElement("div");
+        let naslov = document.createElement("div");
+        naslov.className = "naslov";
+        naslov.innerHTML = this.naziv;
+        pozadina.appendChild(naslov);
+
+        naslov = document.createElement("div");
         naslov.className = "naslov";
         naslov.innerHTML = "PRODAVNICA PC KOMPONENTI";
         pozadina.appendChild(naslov);
 
-        //dodajemo meni
         const meni = document.createElement("div");
         meni.className = "meni";
         host.appendChild(meni);
 
-        //kreiramo listu
         const lista = document.createElement("ul");
         lista.className = "lista";
         meni.appendChild(lista);
 
-
         const linkPocetna = document.createElement("a");
-        linkPocetna.href = "#";
         linkPocetna.className = "link";
         lista.appendChild(linkPocetna);
 
         const pocetna = document.createElement("li");
-        pocetna.innerHTML = "Pocetna";
         linkPocetna.appendChild(pocetna);
 
-
-        // pocetna stranica iscrtavanje
         const pocetnaStranica = document.createElement("div");
         pocetnaStranica.className = "pocetnaStranica";
         host.appendChild(pocetnaStranica);
 
-        // dodavanje forme za izmenu i unos novih proizvoda
         this.crtajFormu(pocetnaStranica);
-        
-        let value = 0;
-        // crtanje delova za kategorije
+
         this.kategorije.forEach(element => {
-            element.prodavnica = this;
-            element.crtajKategoriju(document.body, lista, pocetnaStranica, value++);
+            element.crtajKategoriju(document.body, lista, pocetnaStranica, this.div);
         });
 
     }
-
     crtajFormu(pocetnaStranica)
     {
         const forma = document.createElement("div");
@@ -75,25 +70,54 @@ export class Prodavnica
         destForma.name = "forma";
         forma.appendChild(destForma);
 
-        this.crtajElementForme(forma, "ID: ", "number", "id");
-        document.querySelector(".id").disabled = true;
-        this.crtajElementForme(forma, "Naziv: ", "text", "naziv");
-        this.crtajElementForme(forma, "Cena: ", "number", "cena");
-        this.crtajElementForme(forma, "Na stanju: ", "number", "kolicina");
-        this.crtajElementForme(forma, "Lokacija slike: ", "text", "slika");
 
-        // izbor kategorije
         let elContainer = document.createElement("div");
         elContainer.className = "elContainer";
         forma.appendChild(elContainer);
 
         let labela = document.createElement("label");
-        labela.innerHTML = "Kategorija: ";
+        labela.innerHTML = "Naziv: ";
         elContainer.appendChild(labela);
 
-        let el = document.createElement("select");
-        el.className = "DDList";
+        let el = document.createElement("input");
+        el.type = "text";
+        el.className = "naziv";
         elContainer.appendChild(el);
+
+        labela = document.createElement("label");
+        labela.innerHTML = "Cena: ";
+        elContainer.appendChild(labela);
+
+        el = document.createElement("input");
+        el.type = "number";
+        el.className = "cena";
+        elContainer.appendChild(el);
+
+        labela = document.createElement("label");
+        labela.innerHTML = "Na stanju: ";
+        elContainer.appendChild(labela);
+
+        el = document.createElement("input");
+        el.type = "number";
+        el.className = "kolicina";
+        elContainer.appendChild(el);
+
+        labela = document.createElement("label");
+        labela.innerHTML = "Lokacija slike: ";
+        elContainer.appendChild(labela);
+
+        el = document.createElement("input");
+        el.type = "text";
+        el.className = "slika";
+        elContainer.appendChild(el);
+
+        let labela1 = document.createElement("label");
+        labela1.innerHTML = "Kategorija: ";
+        elContainer.appendChild(labela1);
+
+        let el1 = document.createElement("select");
+        el1.className = "DDList";
+        elContainer.appendChild(el1);
 
         let buttonBox = document.createElement("div");
         buttonBox.className = "buttonBox";
@@ -101,64 +125,80 @@ export class Prodavnica
 
         let button = document.createElement("button");
         button.innerHTML = "Dodaj proizvod";
+        button.classList.add("button");
         buttonBox.appendChild(button);
         button.onclick = (ev)=>{
-            if(document.querySelector("button").innerHTML == "Dodaj proizvod")
-                this.kreirajElement();
-            else this.izmeniElement();
+            this.kreirajElement();
+        } 
+
+        button = document.createElement("button");
+        button.innerHTML = "Izmeni proizvod";
+        button.classList.add("button");
+        buttonBox.appendChild(button);
+        button.onclick = (ev)=>{
+            this.izmeniElement();
         } 
         
         button = document.createElement("button");
         button.innerHTML = "X";
-        button.style.display = "none";
         buttonBox.appendChild(button);
         button.onclick = (ev)=>{
             this.OcistiFormu();
-            button.style.display = "none";
         } 
+        this.div=elContainer;
     }
 
-    izmeniElement()
-    {
-        const id = document.querySelector(".id").value;
-        for (const element of this.kategorije) {
-            for (const el of element.komponente) {
-                if(id == el.id)
+    izmeniElement(){
+
+        const naziv = this.div.querySelector(".naziv").value;
+        const cena = this.div.querySelector(".cena").value;
+        const kolicina = this.div.querySelector(".kolicina").value;
+        const kategorija = this.div.querySelector(".DDList").value;
+        
+        fetch(`https://localhost:5001/Prodavnica/AzurirajKomponentu/${this.id}/${kategorija}/${naziv}/${kolicina}/${cena}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+
+                        cena: cena,
+                        kolicina: kolicina,
+                    })
+                }).then(p => {
+                    if(p.ok)
                     {
-                        el.izmeniProizvod();
-                        return;
+
+                        this.cena = cena;
+                        this.kolicina = kolicina;
+
+                        this.OcistiFormu();
+
+                        alert("Uspesno ste izmenili proizvod!");
                     }
-            }
-        }
-    }
+                    else if(p.status == 406){
+                        alert("Input all informations.");
+                    }
+                }).catch (p => {
+                    console.log(p);
 
-    crtajElementForme(host, lblText, tip, className)
-    {
-        let elContainer = document.createElement("div");
-        elContainer.className = "elContainer";
-        host.appendChild(elContainer);
-
-        let labela = document.createElement("label");
-        labela.innerHTML = lblText;
-        elContainer.appendChild(labela);
-
-        let el = document.createElement("input");
-        el.type = tip;
-        el.className = className;
-        elContainer.appendChild(el);
+                 });
     }
 
     kreirajElement()
     {
-        let naziv = document.querySelector(".naziv").value;
-        let cena = document.querySelector(".cena").value;
-        let kolicina = document.querySelector(".kolicina").value;
-        let slika = document.querySelector(".slika").value;
-        let kategorija = document.querySelector(".DDList");
-        kategorija = kategorija[kategorija.selectedIndex].text;
-        let id = 0;
-        
+        let naziv = this.div.querySelector(".naziv").value;
+        console.log(naziv);
+        let cena = this.div.querySelector(".cena").value;
+        console.log(cena);
+        let kolicina = this.div.querySelector(".kolicina").value;
+        console.log(kolicina);
+        let slika = this.div.querySelector(".slika").value;
+        console.log(slika);
+        let kategorija = this.div.querySelector(".DDList").value;
+
         this.kategorije.forEach(element => {
+
             if(element.opis == kategorija)
             {
                 fetch("https://localhost:5001/Prodavnica/UpisiKomponentu/" + element.id, {
@@ -167,7 +207,7 @@ export class Prodavnica
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        id: id,
+
                         naziv: naziv,
                         cena: cena,
                         kolicina: kolicina,
@@ -177,7 +217,7 @@ export class Prodavnica
                     if(p.ok){
                         p.json().then(q => {
 
-                        let proizvod = new Komponenta(q, naziv, cena, kolicina, slika);
+                        let proizvod = new Komponenta(q.id, naziv, cena, kolicina, slika);
                         proizvod.kategorija = element;
                         element.dodajProizvod(proizvod);
                         proizvod.crtajProizvod(element.proizvodiContainer);
@@ -193,19 +233,13 @@ export class Prodavnica
                 });
             }
         })
-        document.querySelector(".id").disabled = true;
     }
 
     OcistiFormu()
     {
-        document.querySelector(".id").value = "";
-        document.querySelector(".id").disabled = true;
-        document.querySelector(".naziv").value = "";
-        document.querySelector(".cena").value = "";
-        document.querySelector(".kolicina").value = "";
-        document.querySelector(".slika").value = "";
-        document.querySelector(".DDList").selectedIndex = 0;
-        document.querySelector(".DDList").disabled = false;
-        document.querySelector("button").innerHTML = "Dodaj proizvod";
+        this.div.querySelector(".naziv").value = "";
+        this.div.querySelector(".cena").value = "";
+        this.div.querySelector(".kolicina").value = "";
+        this.div.querySelector(".slika").value = "";
     }
 }

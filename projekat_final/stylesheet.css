@@ -1,6 +1,10 @@
 
 @media only screen and (max-width: 800px)
 {
+    .pozadina
+    {
+        background-color:#184d47 ;
+    }
     .naslov
     {
         font-size: 25px;
@@ -97,13 +101,14 @@ li
 .forma
 {
     border: 1px solid #184d47;
+    width: max-content;
     margin-right: 0px;
     display: flex;
     flex-direction: column;
 }
 
 .forma button
-{
+{   width: 100px;
     margin: 10px;
     flex-grow: 1;
 }
@@ -121,6 +126,7 @@ li
     font-size: large;
 
     display: flex;
+    flex-direction: column;
     
 }
 
@@ -144,8 +150,8 @@ li
 
 .slika1
 {
-    height:200px;
-    width:200px;
+    height: 175px;
+    width:175px;
     border-radius: 20px;
     padding:10px;
 }

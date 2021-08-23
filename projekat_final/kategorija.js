@@ -1,4 +1,5 @@
 import {Komponenta} from "./komponenta.js"
+import { Prodavnica } from "./prodavnica.js";
 
 export class Kategorija
 {
@@ -10,7 +11,8 @@ export class Kategorija
         this.opis = opis;
         this.slika = slika;
         this.container = null; 
-        this.proizvodiContainer = null;    
+        this.proizvodiContainer = null;
+
     }
 
     dodajProizvod(pro)
@@ -18,7 +20,7 @@ export class Kategorija
         this.komponente.push(pro);
     }
 
-    crtajKategoriju(host, hostLista, hostPocetnaStranica,value)
+    crtajKategoriju(host, hostLista, hostPocetnaStranica,elContainer)
     {
         
         this.crtajStavku(hostLista);
@@ -26,8 +28,8 @@ export class Kategorija
 
         let op = document.createElement("option");
         op.innerHTML = this.opis;
-        op.value = value;
-        document.querySelector(".DDList").appendChild(op);
+        op.value = this.opis;
+        elContainer.querySelector(".DDList").appendChild(op);
 
 
         this.container = document.createElement("div");
@@ -50,17 +52,6 @@ export class Kategorija
         let dugmeContainer = document.createElement("div");
         dugmeContainer.className = "dugmeContainer";
         pozadina.appendChild(dugmeContainer);
-
-        let destForma = document.createElement("a");
-        destForma.href = "#forma";
-        dugmeContainer.appendChild(destForma);
-
-        let button = document.createElement("button");
-        button.innerHTML = "Dodaj proizvod";
-        destForma.appendChild(button);
-        button.onclick = (ev)=>{
-            this.dodajProizvod();
-        }
 
         this.proizvodiContainer = document.createElement("div");
         this.proizvodiContainer.className = "proizvodi";
@@ -89,19 +80,15 @@ export class Kategorija
         let kategorija = document.createElement("div");
         kategorija.className = "kategorija";
         host.appendChild(kategorija);
-
-        let link = document.createElement("a");
-        link.href = "#" + this.naziv;
-        kategorija.appendChild(link);
        
         let slika = document.createElement("img");
         slika.src = this.slika;
         slika.className = "slika1";
-        link.appendChild(slika);
+        kategorija.appendChild(slika);
 
         let naslovSlike = document.createElement("div");
         naslovSlike.className = "naslovSlike";
         naslovSlike.innerHTML = this.naziv;
-        link.appendChild(naslovSlike);
+        kategorija.appendChild(naslovSlike);
     }
 }

@@ -92,21 +92,26 @@ namespace projekat_finalWebAPI.Controllers
             }
         }
 
-        [Route("AzurirajKomponentu")]
+        [Route("AzurirajKomponentu/{idProdavnice}/{naziv}/{kategorija}/{kolicina}/{cena}")]
         [HttpPut]
-        public async Task<IActionResult> AzurirajKomponentu([FromBody] Komponenta k)
+        public async Task AzurirajKomponentu(int idProdavnice,string kategorija, string naziv, int kolicina, int cena)
         {
-
-            if (k.naziv == "" || k.cena < 1 || k.kolicina < 0 || k.slika == "" )
-            {
-                return StatusCode(406);
-            }
-            else
-            {
-                context.Update<Komponenta>(k);
+                var p= context.prodavnice.Include(p => p.kategorije).ThenInclude(p =>p.komponente).Where(p => p.id==idProdavnice).FirstOrDefault();
+                var nizKategorija=p.kategorije;
+                var nizKomponenti=new List<Komponenta>();
+                nizKategorija.ForEach(kat => {
+                    if(kat.naziv==kategorija){
+                        nizKomponenti=kat.komponente;
+                    }
+                 }); 
+                nizKomponenti.ForEach(komp => {
+                    if(komp.naziv==naziv){
+                        komp.cena=cena;
+                        komp.kolicina=kolicina;
+                        context.Update<Prodavnica>(p);
+                    }
+                });
                 await context.SaveChangesAsync();
-                return Ok();
-            }
         }
 
         [Route("ObrisiKomponentu/{id}")]
