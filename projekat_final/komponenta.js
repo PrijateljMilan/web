@@ -69,17 +69,4 @@ export class Komponenta
         this.kategorija.komponente = this.kategorija.komponente.filter(el => el.id !== this.id);
     }
 
-    izmeni()
-    {
-
-        document.querySelector(".naziv").value = this.naziv;
-        document.querySelector(".cena").value = this.cena;
-        document.querySelector(".kolicina").value = this.kolicina;
-        document.querySelector(".slika").value = this.slika;
-        document.querySelector(".DDList").disabled = true;
-
-        document.querySelector("button").innerHTML = "Izmeni proizvod";
-        document.querySelectorAll("button")[1].style.display = "initial";
-     
-    }
 }
